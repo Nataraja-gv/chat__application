@@ -155,4 +155,35 @@ const verifyOtp = async (req, res) => {
   }
 };
 
-module.exports = { userRegister, sendOtp, userLogin, verifyOtp };
+const getAllUser = async (req, res) => {
+  try {
+    const userId = req.user._id;
+    const users = await User.find({ _id: { $ne: userId } });
+    res.status(200).json({ message: "all users", data: users });
+  } catch (error) {
+    res.status(400).json({ message: error.message });
+  }
+};
+
+const userProfile = async (req, res) => {
+  try {
+    const userId = req.user._id;
+    const user = await User.findById({ _id: userId });
+    if (!user) {
+      return res.status(401).json({ message: "User  not Found" });
+    }
+
+    res.status(200).json({ message: `${user.fullName}  Details`, data: user });
+  } catch (error) {
+    res.status(400).json({ message: error.message });
+  }
+};
+
+module.exports = {
+  userRegister,
+  sendOtp,
+  userLogin,
+  verifyOtp,
+  getAllUser,
+  userProfile,
+};

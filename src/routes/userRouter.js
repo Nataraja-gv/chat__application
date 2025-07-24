@@ -4,6 +4,8 @@ const {
   sendOtp,
   verifyOtp,
   userLogin,
+  getAllUser,
+  userProfile,
 } = require("../controllers/userControllers");
 const upload = require("../middlewares/multer");
 const UserAuth = require("../middlewares/userAuth");
@@ -18,5 +20,7 @@ userRouter.post(
 userRouter.post("/backend/user/otp", sendOtp);
 userRouter.post("/backend/user/otp/verify", verifyOtp);
 userRouter.post("/backend/user/login", userLogin);
+userRouter.get("/backend/all/users", UserAuth, getAllUser);
+userRouter.get("/backend/user/profile", UserAuth, userProfile);
 
 module.exports = userRouter;
