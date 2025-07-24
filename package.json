@@ -1,0 +1,26 @@
+{
+  "dependencies": {
+    "@aws-sdk/client-s3": "^3.850.0",
+    "cookie-parser": "^1.4.7",
+    "dotenv": "^17.2.0",
+    "express": "^5.1.0",
+    "jsonwebtoken": "^9.0.2",
+    "mongoose": "^8.16.4",
+    "multer": "^2.0.2",
+    "multer-s3": "^3.0.1",
+    "nodemailer": "^7.0.5",
+    "nodemon": "^3.1.10",
+    "otp-gen-agent": "^1.1.6",
+    "otp-generator": "^4.0.1"
+  },
+  "name": "chatapp",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "start": "node src/app.js",
+    "dev": "nodemon src/app.js"
+  },
+  "author": "nataraja",
+  "license": "ISC",
+  "description": ""
+}
