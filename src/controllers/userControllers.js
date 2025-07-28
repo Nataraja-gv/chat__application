@@ -129,8 +129,8 @@ const sendOtp = async (req, res) => {
 
 const verifyOtp = async (req, res) => {
   try {
-    const { code } = req.body;
-    const { userId } = req.query;
+    const { code, userId } = req.body;
+    // const { userId } = req.query;
     const validUser = await User.findById({ _id: userId });
     // if (!validUser) {
     //   return res.status(401).json({ message: "Invalid user" });
@@ -138,6 +138,7 @@ const verifyOtp = async (req, res) => {
     const verifyuserOTP = await OtpModel.findOne({
       userId: userId,
     });
+
     if (!verifyuserOTP) {
       return res.status(400).json({ message: "otp already expire" });
     }
