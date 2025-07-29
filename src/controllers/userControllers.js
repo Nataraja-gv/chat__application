@@ -186,6 +186,17 @@ const userProfile = async (req, res) => {
   }
 };
 
+const userLogout = async (req,res) => {
+  try {
+    res.cookie("usertoken", null, {
+      expires: new Date(Date.now()),
+    });
+    res.status(200).json({ message: "User logged out successfully" });
+  } catch (error) {
+    res.status(400).json({ message: error.message });
+  }
+};
+
 module.exports = {
   userRegister,
   sendOtp,
@@ -193,4 +204,5 @@ module.exports = {
   verifyOtp,
   getAllUser,
   userProfile,
+  userLogout,
 };
