@@ -58,15 +58,18 @@ const userRegister = async (req, res) => {
 
 const userLogin = async (req, res) => {
   try {
-    const { userId } = req.query;
-    const validUser = await User.findById({ _id: userId });
+    const { email, fullName } = req.body;
+    const validUser = await User.findOne({
+      email: email,
+      fullName: fullName,
+    });
     if (!validUser) {
       return res.status(401).json({ message: "Invalid user" });
     }
     const otpCode = await customOtpGen({ length: 4 });
 
     const existingUserOTP = await OtpModel.findOne({
-      userId: userId,
+      userId: validUser._id,
     });
 
     if (existingUserOTP) {
@@ -74,7 +77,7 @@ const userLogin = async (req, res) => {
       await existingUserOTP.save();
     } else {
       const store_otp = new OtpModel({
-        userId,
+        userId: validUser._id,
         code: otpCode,
       });
       await store_otp.save();
@@ -82,7 +85,10 @@ const userLogin = async (req, res) => {
 
     await sendOTPEmail(validUser.email, otpCode);
 
-    res.status(200).json({ message: "OTP sent to your email" });
+    res.status(200).json({
+      message: "OTP sent to your email",
+      data: { userId: validUser?._id },
+    });
   } catch (error) {
     res.status(400).json({ message: error.message });
   }
