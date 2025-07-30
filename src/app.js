@@ -4,7 +4,8 @@ const ConnectDB = require("./config/DBConnection");
 const userRouter = require("./routes/userRouter");
 const cookieParser = require("cookie-parser");
 const cors = require("cors");
-
+const http = require("http");
+const createSocketServer = require("./utils/createSocket");
 const app = express();
 app.use(express.json());
 app.use(cookieParser());
@@ -17,11 +18,13 @@ app.use(
 
 app.use("/", userRouter);
 
+const server = http.createServer(app);
+createSocketServer(server);
 const startServer = async () => {
   try {
     await ConnectDB();
     console.log("✅ Database connected successfully");
-    app.listen(process.env.PORT, () => {
+    server.listen(process.env.PORT, () => {
       console.log(`🚀 Server running on http://localhost:${process.env.PORT}`);
     });
   } catch (error) {
