@@ -40,7 +40,8 @@ const createSocketServer = (server) => {
 
       await existingChat.save();
 
-      io.to(roomId).emit("recived_msg", { text, fromUser });
+      const dateTime = new Date();
+      io.to(roomId).emit("recived_msg", { text, fromUser, dateTime });
     });
     socket.on("disconnect", () => {
       console.log("disconnect");

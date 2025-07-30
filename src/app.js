@@ -6,6 +6,7 @@ const cookieParser = require("cookie-parser");
 const cors = require("cors");
 const http = require("http");
 const createSocketServer = require("./utils/createSocket");
+const chatRouter = require("./routes/chatRouter");
 const app = express();
 app.use(express.json());
 app.use(cookieParser());
@@ -17,6 +18,7 @@ app.use(
 );
 
 app.use("/", userRouter);
+app.use("/", chatRouter);
 
 const server = http.createServer(app);
 createSocketServer(server);
