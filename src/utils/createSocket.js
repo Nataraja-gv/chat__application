@@ -1,4 +1,5 @@
 const { Server } = require("socket.io");
+const ChatModel = require("../models/chatmodel");
 
 const createSocketServer = (server) => {
   const io = new Server(server, {
@@ -14,12 +15,32 @@ const createSocketServer = (server) => {
     socket.on("join room", ({ fromUser, targetUser }) => {
       const roomId = [fromUser, targetUser].sort().join("_");
       socket.join(roomId);
-      //   console.log(roomId, "roomId");
+      // console.log(roomId, "roomId");
     });
 
-    socket.on("chat_msg", ({ fromUser, targetUser, input }) => {
+    socket.on("chat_msg", async ({ fromUser, targetUser, text }) => {
       const roomId = [fromUser, targetUser].sort().join("_");
-      socket.to(roomId).emit("recived_msg", { input, fromUser });
+      let existingChat = await ChatModel.findOne({
+        participants: {
+          $all: [fromUser, targetUser],
+        },
+      });
+
+      if (!existingChat) {
+        existingChat = new ChatModel({
+          participants: [fromUser, targetUser],
+          messages: [],
+        });
+      }
+
+      existingChat.messages.push({
+        sender: fromUser,
+        text,
+      });
+
+      await existingChat.save();
+
+      io.to(roomId).emit("recived_msg", { text, fromUser });
     });
     socket.on("disconnect", () => {
       console.log("disconnect");
