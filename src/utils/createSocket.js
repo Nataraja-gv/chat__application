@@ -9,8 +9,16 @@ const createSocketServer = (server) => {
     },
   });
 
+  const onlineUsers = new Map();
+
   io.on("connection", (socket) => {
     console.log("socket_id", socket.id);
+
+    socket.on("active_users", (userId) => {
+      onlineUsers.set(userId, socket.id);
+
+      io.emit("active_online_users", Array.from(onlineUsers.keys()));
+    });
 
     socket.on("join room", ({ fromUser, targetUser }) => {
       const roomId = [fromUser, targetUser].sort().join("_");
@@ -43,7 +51,23 @@ const createSocketServer = (server) => {
       const dateTime = new Date();
       io.to(roomId).emit("recived_msg", { text, fromUser, dateTime });
     });
+
+    socket.on("users_logout", (userId) => {
+      if (onlineUsers.has(userId)) {
+        onlineUsers.delete(userId);
+        io.emit("active_online_users", Array.from(onlineUsers.keys()));
+      }
+    });
+
     socket.on("disconnect", () => {
+      for (let [userId, socketId] of onlineUsers.entries()) {
+        if (socketId === socket.id) {
+          onlineUsers.delete(userId);
+          io.emit("active_online_users", Array.from(onlineUsers.keys()));
+          break;
+        }
+      }
+
       console.log("disconnect");
     });
   });
