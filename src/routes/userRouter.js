@@ -7,6 +7,7 @@ const {
   getAllUser,
   userProfile,
   userLogout,
+  updateUserprofile,
 } = require("../controllers/userControllers");
 const upload = require("../middlewares/multer");
 const UserAuth = require("../middlewares/userAuth");
@@ -24,5 +25,7 @@ userRouter.post("/backend/user/login", userLogin);
 userRouter.get("/backend/all/users", UserAuth, getAllUser);
 userRouter.get("/backend/user/profile", UserAuth, userProfile);
 userRouter.post("/backend/user/logout", userLogout);
+userRouter.patch("/backend/user/profile/update", UserAuth, updateUserprofile);
+
 
 module.exports = userRouter;

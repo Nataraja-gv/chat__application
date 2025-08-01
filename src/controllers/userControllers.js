@@ -186,7 +186,26 @@ const userProfile = async (req, res) => {
   }
 };
 
-const userLogout = async (req,res) => {
+const updateUserprofile = async (req, res) => {
+  try {
+    const userId = req.user._id;
+    const { fullName, about } = req.body;
+
+    const user = await User.findById({ _id: userId });
+    if (!user) {
+      return res.status(401).json({ messsage: "user not found" });
+    }
+
+    user.fullName = fullName;
+    user.about = about;
+    await user.save();
+    res.status(200).json({ message: `${user.fullName}  Details updated` });
+  } catch (error) {
+    res.status(400).json({ message: error.message });
+  }
+};
+
+const userLogout = async (req, res) => {
   try {
     res.cookie("usertoken", null, {
       expires: new Date(Date.now()),
@@ -205,4 +224,5 @@ module.exports = {
   getAllUser,
   userProfile,
   userLogout,
+  updateUserprofile,
 };
