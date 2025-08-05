@@ -44,12 +44,39 @@ const createSocketServer = (server) => {
       existingChat.messages.push({
         sender: fromUser,
         text,
+        isRead: false,
       });
 
       await existingChat.save();
 
       const dateTime = new Date();
       io.to(roomId).emit("recived_msg", { text, fromUser, dateTime });
+      const unreadCount = existingChat.messages.filter(
+        (msg) => msg.sender.toString() !== targetUser && msg.isRead === false
+      ).length;
+
+      const targetSocketId = onlineUsers.get(targetUser);
+      if (targetSocketId) {
+        io.to(targetSocketId).emit("unread_count", {
+          fromUser,
+          unreadCount,
+        });
+      }
+    });
+
+    socket.on("mark_as_read", async ({ fromUser, targetUser }) => {
+      const chat = await ChatModel.findOne({
+        participants: { $all: [fromUser, targetUser] },
+      });
+      if (chat) {
+        chat?.messages?.forEach((msg) => {
+          if (msg.sender !== fromUser && msg.isRead === Boolean(false)) {
+            msg.isRead = true;
+          }
+        });
+
+        await chat.save();
+      }
     });
 
     socket.on("users_logout", (userId) => {
